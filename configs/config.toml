@@ -1,0 +1,72 @@
+# --- SCHEMA TEST FOR PARSING ---
+# ===============================
+# Distro: CachyOS
+
+# GLOBAL OPTIONS
+[options]
+packagemanager = "pacman" # only have this
+
+# THE TASK MANAGER
+# [taskmanager]
+# run = ["name_the_task1", "name_the_task2", "name_the_task3", "..."]
+# run all by default
+
+# TASKS SCHEMA
+# [tasks.name_the_task]
+# type = "install/remove/update/shell"
+#
+# # if type == install
+# flags = ["your-packagemanager-installflags"]
+# pkgs = ["<package1>", "<package2>", "..."]
+#
+# # if type == remove
+# flags = ["your-packagemanager-removeflags"]
+# pkgs = ["<package1>", "<package2>", "..."]
+#
+# # NOTE: sudo (packagemanager) (flags) (pkgs)
+#
+# # if type == shell
+# program = "your-program" # if you want sudo, put program = "sudo"
+# flags = ["flags-or-program"] # if you want sudo, put the program that run as root here + flags that program
+# args = ["arg1", "arg2", "..."]
+# # NOTE: (program) (flags) (args)
+
+# SOME TASKS EXAMPLE
+# NOTE: I doesn't use no cofirm
+
+[taskmanager]
+run = ["update_system", "installer", "remover", "aur", "flatpak"]
+
+# type = install
+[tasks.installer]
+type = "install"
+flags = ["-S", "--needed"]
+pkgs = ["neovim"]
+
+# type = remove
+[tasks.remover]
+type = "remove"
+flags = ["-R"]
+pkgs = ["mako"]
+
+# type = update
+[tasks.update_system]
+type = "update"
+flags = ["-Syu"]
+
+# type = shell
+[tasks.aur]
+type = "shell"
+program = "paru"
+flags = ["-S"]
+args = ["calibre-bin"]
+# paru -S calibre-bin
+
+# type = shell
+[tasks.flatpak]
+type = "shell"
+program = "flatpak"
+flags = ["install"]
+args = ["md.obsidian.obsidian", "com.spotify.Client"]
+# flatpak install md.obsidian.obsidian com.spotify.Client
+

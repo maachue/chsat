@@ -1,0 +1,13 @@
+# Change all file text to LF only for repo
+* text=auto eol=lf
+
+# Special
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# binary file, don't touch
+*.png binary
+*.jpg binary
+*.exe binary
+*.lib binary
+*.obj binary
