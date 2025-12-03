@@ -35,8 +35,8 @@ packagemanager = "pacman" # THIS IS REQUIRED
 # SOME TASKS EXAMPLE
 # NOTE: I doesn't use no cofirm
 
-# [taskmanager]
-# run = ["update_system", "installer", "remover", "aur", "flatpak"]
+[taskmanager]
+run = ["update_system", "installer", "remover", "aur", "flatpak"]
 #
 # NOTE: You dont need taskmanager.run to run the tasks, by default it will run all of tasks
 #

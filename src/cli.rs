@@ -11,6 +11,9 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Commands {
     Install {
+        #[arg(long, short, value_delimiter = ',', alias = "only", short_alias = 'o')]
+        task: Option<Vec<String>>,
+
         /// path to your config
         config: PathBuf,
 
@@ -23,7 +26,7 @@ pub enum Commands {
         no_validate: bool,
 
         /// debug (print all the config has)
-        #[arg(long, default_value_t = false)]
+        #[arg(long)]
         debug: bool,
 
         /// skip confirm

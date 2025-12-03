@@ -3,6 +3,7 @@ use crate::{
         config::Config,
         frontend::FrontEnd,
         resolver::{ToCommand, resolve_tasks},
+        validate::{is_define, validate},
     },
     utils,
 };
@@ -12,6 +13,7 @@ use owo_colors::OwoColorize;
 pub mod config;
 pub mod frontend;
 pub mod resolver;
+pub mod validate;
 
 pub struct BuiltCommand {
     pub program: String,
@@ -40,6 +42,8 @@ impl std::fmt::Display for BuiltCommand {
 }
 
 pub fn manage(config: &Config, dry_run: bool, no_validate: bool, no_confirm: bool) -> Result<()> {
+    is_define(&config.taskmanager.run, &config.tasks)?;
+
     let list = resolve_tasks(&config.taskmanager.run, &config.tasks);
 
     let cmds: Vec<BuiltCommand> = list
@@ -54,13 +58,13 @@ pub fn manage(config: &Config, dry_run: bool, no_validate: bool, no_confirm: boo
     for cmd in cmds {
         if dry_run {
             if !no_validate {
-                cmd.validate()?;
+                validate(&cmd.program)?;
             }
             print!(" - ");
             cmd.dry_run();
         } else {
             if !no_validate {
-                cmd.validate()?;
+                validate(&cmd.program)?;
             }
 
             if no_confirm {

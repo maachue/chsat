@@ -6,19 +6,22 @@ use crate::cli::Commands;
 
 mod cli;
 mod runner;
+mod settings;
 mod utils;
 
 fn main() -> Result<()> {
     let args = cli::Cli::parse();
     match args.command {
         Commands::Install {
+            task,
             config,
             dry_run,
             no_validate,
             debug,
             no_confirm,
-            ..
         } => {
+            println!("{:?}", task.red().bold());
+
             let mut cfg = runner::config::Config::parse(config)?;
 
             if no_confirm != cfg.options.no_confirm {
@@ -27,6 +30,16 @@ fn main() -> Result<()> {
 
             if debug {
                 println!("{} The config:\n {:?}", "[DEBUG]".red().bold(), cfg);
+            }
+
+            if let Some(tasks) = &task {
+                println!("[INFO] Run specify task(s):");
+
+                for t in tasks {
+                    println!(" - {}", t);
+                }
+
+                cfg.taskmanager.run = Some(tasks.clone());
             }
 
             runner::manage(&cfg, dry_run, no_validate, cfg.options.no_confirm)?;
