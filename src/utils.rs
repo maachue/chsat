@@ -1,5 +1,9 @@
-use std::path::PathBuf;
 use anyhow::Result;
+use std::path::PathBuf;
+
+pub const ERR: &str = "[ERR]";
+pub const DEBUG: &str = "[DEBUG]";
+pub const INFO: &str = "[INFO]";
 
 pub fn resolve_path(path_str: &str) -> PathBuf {
     PathBuf::from(
@@ -12,9 +16,8 @@ pub fn resolve_path(path_str: &str) -> PathBuf {
 
 pub fn ask(msg: &str) -> Result<bool> {
     use dialoguer::Confirm;
-    let confirmation = Confirm::new()
-        .with_prompt(msg)
-        .interact()?;
+    let confirmation = Confirm::new().with_prompt(msg).interact()?;
 
     Ok(confirmation)
 }
+

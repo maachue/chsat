@@ -1,6 +1,7 @@
-use anyhow::Result;
+use anyhow::{Result, bail};
 use clap::Parser;
 use owo_colors::OwoColorize;
+use utils::{DEBUG, ERR, INFO};
 
 use crate::cli::Commands;
 
@@ -20,8 +21,6 @@ fn main() -> Result<()> {
             debug,
             no_confirm,
         } => {
-            println!("{:?}", task.red().bold());
-
             let mut cfg = runner::config::Config::parse(config)?;
 
             if no_confirm != cfg.options.no_confirm {
@@ -29,11 +28,11 @@ fn main() -> Result<()> {
             }
 
             if debug {
-                println!("{} The config:\n {:?}", "[DEBUG]".red().bold(), cfg);
+                println!("{} The config:\n {:?}", DEBUG.red().bold(), cfg);
             }
 
             if let Some(tasks) = &task {
-                println!("[INFO] Run specify task(s):");
+                println!("{} Run specify task(s):", INFO.blue().bold());
 
                 for t in tasks {
                     println!(" - {}", t);
@@ -49,20 +48,39 @@ fn main() -> Result<()> {
             value,
             debug,
             config,
+            init,
+            no_confirm,
+            no_display,
         } => {
+            let display = !no_display; // this is my fault
+            let cfg = crate::settings::config::Config::parse(config.unwrap())?;
             if debug {
-                println!("{:?}", settings)
+                println!("{} {:?}", DEBUG.red().bold(), settings);
+                println!("{} settings:\n{:?}", DEBUG.red().bold(), cfg);
             }
 
-            // let cfg = settings_config::Config::parse(config.unwrap())?;
+            if init {
+                crate::settings::init::init(&cfg, display, no_confirm)?;
+                return Ok(());
+            }
 
-            // let Someset: Vec<&str> = settings.split('.').collect();
-
-            // if debug {
-            //     println!("{} Config has: {:?}", "[DEBUG]".red().bold(), cfg);
-            // }
-
-            // settings::manage(&cfg, &set, &value.unwrap(), true, true)?;
+            match (settings, value) {
+                (Some(s), Some(v)) => {
+                    settings::manage(&cfg, &s, &v, display, no_confirm)?;
+                }
+                (Some(_), None) => {
+                    bail!("{} Missing value. `--help` to see usage", ERR.red().bold())
+                }
+                (None, Some(_)) => {
+                    bail!(
+                        "{} Missing setting. `--help` to see usage",
+                        ERR.red().bold()
+                    )
+                }
+                _ => {
+                    bail!("{} Nothing to do.", ERR.red().bold())
+                }
+            }
         }
     }
     Ok(())

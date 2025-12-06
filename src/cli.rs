@@ -42,7 +42,18 @@ pub enum Commands {
         debug: bool,
 
         /// config
-        #[arg(long, short)]
+        #[arg(long, short, default_value = "~/.config/dotctl/settings.toml")]
         config: Option<PathBuf>,
+
+        // init the settings (from settings)
+        #[arg(long, short)]
+        init: bool,
+
+        // skip confirm
+        #[arg(long)]
+        no_confirm: bool,
+
+        #[arg(long)]
+        no_display: bool,
     },
 }
