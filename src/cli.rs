@@ -45,6 +45,7 @@ pub enum Commands {
         #[arg(long)]
         debug: bool,
 
+<<<<<<< HEAD
         /// Path to settings config
         #[arg(long, short, default_value = "~/.config/yaat/settings.toml")]
         config: Option<PathBuf>,
