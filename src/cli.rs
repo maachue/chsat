@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
+#[command(version, long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -11,48 +12,52 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Commands {
     Install {
+        /// Task(s) to run
         #[arg(long, short, value_delimiter = ',', alias = "only", short_alias = 'o')]
         task: Option<Vec<String>>,
 
-        /// path to your config
+        /// Path to config file
         config: PathBuf,
 
-        /// print all command(s) will execute
+        /// Show commands
         #[arg(long, alias = "validate")]
         dry_run: bool,
 
-        /// non validate run (all will validate by default)
+        /// Skip validation
         #[arg(long)]
         no_validate: bool,
 
-        /// debug (print all the config has)
+        /// Debugging
         #[arg(long)]
         debug: bool,
 
-        /// skip confirm
+        /// Skip confirmation
         #[arg(long)]
         no_confirm: bool,
     },
     Set {
+        /// Setting key
         settings: Option<String>,
+        /// New value for setting key
         value: Option<String>,
 
-        /// debug
+        /// Debugging
         #[arg(long)]
         debug: bool,
 
-        /// config
-        #[arg(long, short, default_value = "~/.config/dotctl/settings.toml")]
+        /// Path to settings config
+        #[arg(long, short, default_value = "~/.config/yaat/settings.toml")]
         config: Option<PathBuf>,
 
-        // init the settings (from settings)
+        /// Initialize settings file
         #[arg(long, short)]
         init: bool,
 
-        // skip confirm
+        /// Skip confirmation
         #[arg(long)]
         no_confirm: bool,
 
+        /// DO not print
         #[arg(long)]
         no_display: bool,
     },
