@@ -22,8 +22,6 @@ fn main() -> Result<()> {
             debug,
             no_confirm,
         } => {
-            // println!("{:?}", task.red().bold());
-
             let mut cfg = runner::config::Config::parse(config)?;
 
             if no_confirm != cfg.options.no_confirm {
@@ -55,6 +53,11 @@ fn main() -> Result<()> {
             if debug {
                 println!("{} {:?}", DEBUG.red().bold(), settings);
                 println!("{} settings:\n{:?}", DEBUG.red().bold(), cfg);
+            }
+
+            if init {
+                crate::settings::init::init(&cfg, true, false)?;
+                return Ok(())
             }
 
             match (settings, value) {

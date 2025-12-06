@@ -2,7 +2,7 @@ mod resolver;
 mod validate;
 mod build;
 mod exec;
-// pub mod utils;
+pub mod init;
 pub mod config;
 
 use anyhow::Result;
