@@ -1,11 +1,11 @@
-# TEMPLATE DEFINE SETTINGS FOR `dotctl`
+# TEMPLATE DEFINE SETTINGS FOR `yaat`
 #| (based on my dotfiles!)
 
 ## at options, you required define the path
 [options]
 master_path = "~/.config/yaat/test" # THIS IS REQUIRED
 # THIS PATH IS TEMP!
-# - By default, the path is ~/.config/dotctl
+# - By default, the path is ~/.config/yaat
 
 ## DEFINE SETTINGS
 
