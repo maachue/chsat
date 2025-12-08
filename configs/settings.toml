@@ -3,7 +3,7 @@
 
 ## at options, you required define the path
 [options]
-master_path = "D:/Code/rust/dotctl/configs/settings" # THIS IS REQUIRED
+master_path = "~/.config/yaat/test" # THIS IS REQUIRED
 # THIS PATH IS TEMP!
 # - By default, the path is ~/.config/dotctl
 
