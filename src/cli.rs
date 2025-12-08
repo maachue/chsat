@@ -2,6 +2,8 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
+use crate::utils;
+
 #[derive(Parser)]
 #[command(version, long_about = None)]
 pub struct Cli {
@@ -46,7 +48,7 @@ pub enum Commands {
         debug: bool,
 
         /// Path to settings config
-        #[arg(long, short, default_value = "~/.config/yaat/settings.toml")]
+        #[arg(long, short, default_value = get_default_path().into_os_string())]
         config: Option<PathBuf>,
 
         /// Initialize settings file
@@ -61,4 +63,10 @@ pub enum Commands {
         #[arg(long)]
         no_display: bool,
     },
+}
+
+fn get_default_path() -> PathBuf {
+    let path = "~/.config/yaat/settings.toml";
+    let path = utils::resolve_path(path);
+    path
 }
