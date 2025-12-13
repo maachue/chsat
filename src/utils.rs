@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::path::PathBuf;
+use std::{path::PathBuf};
 
 pub const ERR: &str = "[ERR]";
 pub const DEBUG: &str = "[DEBUG]";
@@ -21,3 +21,14 @@ pub fn ask(msg: &str) -> Result<bool> {
     Ok(confirmation)
 }
 
+pub fn read_stdin() -> Result<Option<String>> {
+    use std::io::{self, Read, IsTerminal};
+
+    if ! io::stdin().is_terminal() {
+        let mut buf = String::new();
+        io::stdin().read_to_string(&mut buf)?;
+        Ok(Some(buf))
+    } else {
+        Ok(None)
+    }
+}

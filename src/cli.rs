@@ -13,13 +13,18 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    /// TasksRunner based on TOML configuration
     Install {
         /// Task(s) to run
         #[arg(long, short, value_delimiter = ',', alias = "only", short_alias = 'o')]
         task: Option<Vec<String>>,
 
         /// Path to config file
-        config: PathBuf,
+        config: Option<PathBuf>,
+
+        /// Parse from text
+        #[arg(long = "from-txt", alias = "from-text")]
+        config_txt: Option<String>,
 
         /// Show commands
         #[arg(long, alias = "validate")]
@@ -37,6 +42,7 @@ pub enum Commands {
         #[arg(long)]
         no_confirm: bool,
     },
+    /// Change settings as file based on TOML configuration
     Set {
         /// Setting key
         settings: Option<String>,
@@ -50,6 +56,10 @@ pub enum Commands {
         /// Path to settings config
         #[arg(long, short, default_value = get_default_path().into_os_string())]
         config: Option<PathBuf>,
+
+        /// Parse from text
+        #[arg(long = "from-txt", alias = "from-text")]
+        config_txt: Option<String>,
 
         /// Initialize settings file
         #[arg(long, short)]
