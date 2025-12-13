@@ -20,9 +20,22 @@ fn main() -> Result<()> {
             no_validate,
             debug,
             no_confirm,
+            config_txt,
         } => {
-            let mut cfg = runner::config::Config::parse(config)?;
+            // PIPELINES LOGIC
+            let stdin = utils::read_stdin()?;
 
+            let mut cfg = if let Some(txt) = stdin {
+                runner::config::Config::parse_from_txt(&txt)?
+            } else if let Some(txt) = config_txt {
+                runner::config::Config::parse_from_txt(&txt)?
+            } else if let Some(path) = config {
+                runner::config::Config::parse(path)?
+            } else {
+                bail!("{} Config not found", "[ERR]".red().bold());
+            };
+
+            // OVERRIDE NO CONFIRM
             if no_confirm != cfg.options.no_confirm {
                 cfg.options.no_confirm = no_confirm;
             }

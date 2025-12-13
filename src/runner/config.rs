@@ -64,4 +64,9 @@ impl Config {
         let cfg = toml::from_str(&context)?;
         Ok(cfg)
     }
+
+    pub fn parse_from_txt(context: &str) -> Result<Config> {
+        let cfg = toml::from_str(&context)?;
+        Ok(cfg)
+    }
 }
