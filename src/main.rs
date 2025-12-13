@@ -1,3 +1,5 @@
+use std::io::IsTerminal;
+
 use anyhow::{Result, bail};
 use clap::Parser;
 use owo_colors::OwoColorize;
@@ -64,9 +66,26 @@ fn main() -> Result<()> {
             init,
             no_confirm,
             no_display,
+            config_txt,
         } => {
             let display = !no_display; // this is my fault
-            let cfg = crate::settings::config::Config::parse(config.unwrap())?;
+
+            // PIPELINES LOGIC
+            let stdin = utils::read_stdin()?;
+
+            let cfg = if let Some(txt) = stdin {
+                crate::settings::config::Config::parse_from_txt(&txt)?
+            } else if let Some(txt) = config_txt {
+                crate::settings::config::Config::parse_from_txt(&txt)?
+            } else if let Some(path) = config {
+                crate::settings::config::Config::parse(path)?
+            } else {
+                bail!("{} Config not found", "[ERR]".red().bold());
+            };
+
+            // DONT ASK INTERACTIVE WHEN PIPPING
+            let no_confirm = no_confirm || !std::io::stdin().is_terminal();
+
             if debug {
                 println!("{} {:?}", DEBUG.red().bold(), settings);
                 println!("{} settings:\n{:?}", DEBUG.red().bold(), cfg);

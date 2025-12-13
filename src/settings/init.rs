@@ -22,15 +22,20 @@ pub fn init(config: &Config, _display: bool, no_confirm: bool) -> Result<()> {
         for (sub, value) in subs {
             let path = build_path(&master_path, master, sub);
             println!("Will create: {:?} = {}", path, value);
-            if no_confirm || utils::ask("Are you sure?")? {
+            if ! no_confirm && ! utils::ask("Are you sure?")? { // bug (fixed)
                 continue;
             }
 
             if let Some(parent) = path.parent() {
                 std::fs::create_dir_all(parent)?;
+                println!("{}", "RUNNED".green().bold())
             }
 
-            fs::write(&path, value)?;
+            let res = fs::write(&path, value);
+            match res {
+                Ok(_) => println!("{} WROTE", "[INFO]".green().bold()),
+                Err(e) => println!("{} CAN'T WROTE:\n {}", "[ERR]".red().bold(), e),
+            };
         }
     }
 

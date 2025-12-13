@@ -57,6 +57,10 @@ pub enum Commands {
         #[arg(long, short, default_value = get_default_path().into_os_string())]
         config: Option<PathBuf>,
 
+        /// Parse from text
+        #[arg(long = "from-txt", alias = "from-text")]
+        config_txt: Option<String>,
+
         /// Initialize settings file
         #[arg(long, short)]
         init: bool,
