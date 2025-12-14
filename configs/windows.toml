@@ -5,7 +5,7 @@
 run = ["magick", "fastfetch", "install-error"]
 
 [options]
-non_confirm = false
+no_confirm = false
 packagemanager = "winget"
 
 [tasks.winget-installer]

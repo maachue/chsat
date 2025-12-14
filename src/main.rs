@@ -42,6 +42,9 @@ fn main() -> Result<()> {
                 cfg.options.no_confirm = no_confirm;
             }
 
+            // DONT ASK INTERACTIVE WHEN PIPPING
+            cfg.options.no_confirm = no_confirm || !std::io::stdin().is_terminal();
+
             if debug {
                 println!("{} The config:\n {:?}", DEBUG.red().bold(), cfg);
             }
