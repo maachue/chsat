@@ -21,7 +21,7 @@ pub struct Options {
 impl Default for Options {
     fn default() -> Self {
         Self {
-            master_path: Some(r"~/.config/yaat".to_string()),
+            master_path: Some(r"~/.config/chsat".to_string()),
         }
     }
 }

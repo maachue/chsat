@@ -1,6 +1,6 @@
 <div align="center">
-    <h1>yaat</h1>
-    <em>Yet Another Automation Tool</em>
+    <h1>chsat</h1>
+    <em>Chue's Silly Automation Tools</em>
 <br/> <!-- badges here -->
 <br/>
 Automate development setup and environment tasks
@@ -13,14 +13,14 @@ with a simple, declarative TOML configuration.
 ### Via Cargo (recommended)
 
 ```bash
-cargo install --git https://github.com/maachue/yaat.git
+cargo install --git https://github.com/maachue/chsat.git
 ```
 
 ### Build from source
 
 ```bash
-git clone https://github.com/maachue/yaat.git
-cd yaat
+git clone https://github.com/maachue/chsat.git
+cd chsat
 cargo build --release
 ```
 
@@ -28,6 +28,6 @@ cargo build --release
 
 Copyright (C) 2025 [maachue](https://github.com/maachue).
 
-`yaat` is made available under the terms of either the MIT License or the Apache License 2.0, at your option.
+`chsat` is made available under the terms of either the MIT License or the Apache License 2.0, at your option.
 
 See [LICENSE-APACHE](./LICENSE-APACHE) and [LICENSE-MIT](./LICENSE-MIT) files for license details.
