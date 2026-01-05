@@ -76,7 +76,7 @@ pub enum Commands {
 }
 
 fn get_default_path() -> PathBuf {
-    let path = "~/.config/yaat/settings.toml";
-    let path = utils::resolve_path(path);
-    path
+    let path = "~/.config/chsat/settings.toml";
+    utils::resolve_path(path)
 }
+
