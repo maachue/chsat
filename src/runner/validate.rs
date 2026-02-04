@@ -1,4 +1,7 @@
-use anyhow::{Context, Result, bail};
+use color_eyre::{
+    Result,
+    eyre::{Context, bail},
+};
 use indexmap::IndexMap;
 use owo_colors::OwoColorize;
 use which::which;

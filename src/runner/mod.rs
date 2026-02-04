@@ -7,7 +7,7 @@ use crate::{
     },
     utils,
 };
-use anyhow::Result;
+use color_eyre::Result;
 use owo_colors::OwoColorize;
 
 pub mod config;

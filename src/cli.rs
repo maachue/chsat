@@ -1,82 +1,35 @@
 use std::path::PathBuf;
 
-use clap::{Parser, Subcommand};
-
-use crate::utils;
+use clap::Parser;
 
 #[derive(Parser)]
 #[command(version, long_about = None)]
 pub struct Cli {
-    #[command(subcommand)]
-    pub command: Commands,
+    /// Task(s) to run
+    #[arg(long, short, value_delimiter = ',', alias = "only", short_alias = 'o')]
+    pub task: Option<Vec<String>>,
+
+    /// Path to config file
+    #[arg(value_parser = clap::value_parser!(PathBuf))]
+    pub config: Option<PathBuf>,
+
+    /// Parse from text
+    #[arg(long = "from-str", alias = "from-text", conflicts_with = "config")]
+    pub config_txt: Option<String>,
+
+    /// Show commands
+    #[arg(long, alias = "validate")]
+    pub dry_run: bool,
+
+    /// Skip validation
+    #[arg(long)]
+    pub no_validate: bool,
+
+    /// Debugging
+    #[arg(long)]
+    pub debug: bool,
+
+    /// Skip confirmation
+    #[arg(long)]
+    pub no_confirm: bool,
 }
-
-#[derive(Subcommand)]
-pub enum Commands {
-    /// TasksRunner based on TOML configuration
-    Install {
-        /// Task(s) to run
-        #[arg(long, short, value_delimiter = ',', alias = "only", short_alias = 'o')]
-        task: Option<Vec<String>>,
-
-        /// Path to config file
-        config: Option<PathBuf>,
-
-        /// Parse from text
-        #[arg(long = "from-txt", alias = "from-text")]
-        config_txt: Option<String>,
-
-        /// Show commands
-        #[arg(long, alias = "validate")]
-        dry_run: bool,
-
-        /// Skip validation
-        #[arg(long)]
-        no_validate: bool,
-
-        /// Debugging
-        #[arg(long)]
-        debug: bool,
-
-        /// Skip confirmation
-        #[arg(long)]
-        no_confirm: bool,
-    },
-    /// Change settings as file based on TOML configuration
-    Set {
-        /// Setting key
-        settings: Option<String>,
-        /// New value for setting key
-        value: Option<String>,
-
-        /// Debugging
-        #[arg(long)]
-        debug: bool,
-
-        /// Path to settings config
-        #[arg(long, short, default_value = get_default_path().into_os_string())]
-        config: Option<PathBuf>,
-
-        /// Parse from text
-        #[arg(long = "from-txt", alias = "from-text")]
-        config_txt: Option<String>,
-
-        /// Initialize settings file
-        #[arg(long, short)]
-        init: bool,
-
-        /// Skip confirmation
-        #[arg(long)]
-        no_confirm: bool,
-
-        /// DO not print
-        #[arg(long)]
-        no_display: bool,
-    },
-}
-
-fn get_default_path() -> PathBuf {
-    let path = "~/.config/chsat/settings.toml";
-    utils::resolve_path(path)
-}
-

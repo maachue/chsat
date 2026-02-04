@@ -1,122 +1,46 @@
 use std::io::IsTerminal;
 
-use anyhow::{Result, bail};
 use clap::Parser;
-use owo_colors::OwoColorize;
-use utils::{DEBUG, ERR, INFO};
-
-use crate::cli::Commands;
-
+use color_eyre::{Result, eyre::bail};
 mod cli;
 mod runner;
-mod settings;
 mod utils;
 
 fn main() -> Result<()> {
-    let args = cli::Cli::parse();
-    match args.command {
-        Commands::Install {
-            task,
-            config,
-            dry_run,
-            no_validate,
-            debug,
-            no_confirm,
-            config_txt,
-        } => {
-            // PIPELINES LOGIC
-            let stdin = utils::read_stdin()?;
+    let mut cmd = cli::Cli::parse();
 
-            let mut cfg = if let Some(txt) = stdin {
-                runner::config::Config::parse_from_txt(&txt)?
-            } else if let Some(txt) = config_txt {
-                runner::config::Config::parse_from_txt(&txt)?
-            } else if let Some(path) = config {
-                runner::config::Config::parse(path)?
-            } else {
-                bail!("{} Config not found", "[ERR]".red().bold());
-            };
+    let stdin = utils::read_stdin()?;
 
-            // OVERRIDE NO CONFIRM
-            if no_confirm != cfg.options.no_confirm {
-                cfg.options.no_confirm = no_confirm;
-            }
+    if cmd.config_txt.is_none()
+        && let Some(stdin) = stdin
+    {
+        cmd.config_txt = Some(stdin)
+    };
 
-            // DONT ASK INTERACTIVE WHEN PIPPING
-            cfg.options.no_confirm = no_confirm || !std::io::stdin().is_terminal();
+    let mut cfg = if let Some(config) = cmd.config {
+        runner::config::Config::parse(config)?
+    } else if let Some(context) = cmd.config_txt {
+        runner::config::Config::parse_from_txt(&context)?
+    } else {
+        bail!("[CONFIG] field is required.")
+    };
 
-            if debug {
-                println!("{} The config:\n {:?}", DEBUG.red().bold(), cfg);
-            }
-
-            if let Some(tasks) = &task {
-                println!("{} Run specify task(s):", INFO.blue().bold());
-
-                for t in tasks {
-                    println!(" - {}", t);
-                }
-
-                cfg.taskmanager.run = Some(tasks.clone());
-            }
-
-            runner::manage(&cfg, dry_run, no_validate, cfg.options.no_confirm)?;
-        }
-        Commands::Set {
-            settings,
-            value,
-            debug,
-            config,
-            init,
-            no_confirm,
-            no_display,
-            config_txt,
-        } => {
-            let display = !no_display; // this is my fault
-
-            // PIPELINES LOGIC
-            let stdin = utils::read_stdin()?;
-
-            let cfg = if let Some(txt) = stdin {
-                crate::settings::config::Config::parse_from_txt(&txt)?
-            } else if let Some(txt) = config_txt {
-                crate::settings::config::Config::parse_from_txt(&txt)?
-            } else if let Some(path) = config {
-                crate::settings::config::Config::parse(path)?
-            } else {
-                bail!("{} Config not found", "[ERR]".red().bold());
-            };
-
-            // DONT ASK INTERACTIVE WHEN PIPPING
-            let no_confirm = no_confirm || !std::io::stdin().is_terminal();
-
-            if debug {
-                println!("{} {:?}", DEBUG.red().bold(), settings);
-                println!("{} settings:\n{:?}", DEBUG.red().bold(), cfg);
-            }
-
-            if init {
-                crate::settings::init::init(&cfg, display, no_confirm)?;
-                return Ok(());
-            }
-
-            match (settings, value) {
-                (Some(s), Some(v)) => {
-                    settings::manage(&cfg, &s, &v, display, no_confirm)?;
-                }
-                (Some(_), None) => {
-                    bail!("{} Missing value. `--help` to see usage", ERR.red().bold())
-                }
-                (None, Some(_)) => {
-                    bail!(
-                        "{} Missing setting. `--help` to see usage",
-                        ERR.red().bold()
-                    )
-                }
-                _ => {
-                    bail!("{} Nothing to do.", ERR.red().bold())
-                }
-            }
-        }
+    if cmd.no_confirm != cfg.options.no_confirm {
+        cfg.options.no_confirm = cmd.no_confirm;
     }
+
+    cfg.options.no_confirm = cmd.no_confirm || !std::io::stdin().is_terminal();
+
+    if let Some(tasks) = &cmd.task {
+        println!("Run specify task(s):");
+
+        for t in tasks {
+            println!(" - {}", t);
+        }
+
+        cfg.taskmanager.run = Some(tasks.clone());
+    }
+
+    runner::manage(&cfg, cmd.dry_run, cmd.no_validate, cfg.options.no_confirm)?;
     Ok(())
 }

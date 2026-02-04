@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::Result;
 use indexmap::IndexMap;
 use serde::Deserialize;
 use std::path::PathBuf;

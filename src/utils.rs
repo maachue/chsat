@@ -1,17 +1,8 @@
-use anyhow::Result;
-use std::{path::PathBuf};
+use color_eyre::Result;
+use std::path::PathBuf;
 
-pub const ERR: &str = "[ERR]";
-pub const DEBUG: &str = "[DEBUG]";
-pub const INFO: &str = "[INFO]";
-
-pub fn resolve_path(path_str: &str) -> PathBuf {
-    PathBuf::from(
-        shellexpand::full(path_str)
-            .unwrap()
-            .into_owned()
-            .replace("/", std::path::MAIN_SEPARATOR_STR.to_string().as_str()),
-    )
+pub fn get_path() -> Option<PathBuf> {
+    directories::ProjectDirs::from("com", "maachue", "chsat").map(|c| PathBuf::from(c.config_dir()))
 }
 
 pub fn ask(msg: &str) -> Result<bool> {
@@ -22,9 +13,9 @@ pub fn ask(msg: &str) -> Result<bool> {
 }
 
 pub fn read_stdin() -> Result<Option<String>> {
-    use std::io::{self, Read, IsTerminal};
+    use std::io::{self, IsTerminal, Read};
 
-    if ! io::stdin().is_terminal() {
+    if !io::stdin().is_terminal() {
         let mut buf = String::new();
         io::stdin().read_to_string(&mut buf)?;
         Ok(Some(buf))
@@ -32,3 +23,4 @@ pub fn read_stdin() -> Result<Option<String>> {
         Ok(None)
     }
 }
+

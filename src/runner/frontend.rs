@@ -1,5 +1,5 @@
 use crate::runner::BuiltCommand;
-use anyhow::Result;
+use color_eyre::Result;
 
 pub trait FrontEnd {
     fn dry_run(&self);
