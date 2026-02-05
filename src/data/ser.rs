@@ -68,6 +68,7 @@ pub struct PackageManagerInfo {
     pub binary_path: PathBuf,
     pub flags: PMFlags,
     pub usage: String,
+    pub required_sudo: bool,
 }
 
 #[derive(Serialize, Default)]

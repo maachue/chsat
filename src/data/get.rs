@@ -73,6 +73,7 @@ impl PackageManagerInfo {
                     update_metadata_flags: vec!["-Syy".to_string()],
                 },
                 usage: "{{pm}} {{flags}} {{pkgs}} {{opts}}".to_string(),
+                required_sudo: true,
             },
             _ => Self::default(),
         }
