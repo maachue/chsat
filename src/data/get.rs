@@ -94,7 +94,7 @@ impl ExposeData {
                 arch: std::env::consts::ARCH,
                 args: args.to_owned(),
             },
-            command_dir: shellexpand::tilde(".").into_owned().into(),
+            command_dir: std::fs::canonicalize(Path::new(".")).unwrap_or_default(),
             config_file: config.to_path_buf(),
             executable: which::which("chsat").unwrap_or_default(),
             home_dir: std::env::home_dir().unwrap_or_default(),
@@ -105,12 +105,12 @@ impl ExposeData {
             os_release,
             uid: users::get_current_uid().to_string(),
             username: users::get_current_username()
-                .unwrap_or("".into())
+                .unwrap_or_default()
                 .to_string_lossy()
                 .into_owned(),
             gid: users::get_current_gid().to_string(),
             group: users::get_current_groupname()
-                .unwrap_or("".into())
+                .unwrap_or_default()
                 .to_string_lossy()
                 .into_owned(),
             windows_version: WindowsInfo::get(),
