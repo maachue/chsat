@@ -23,4 +23,3 @@ pub fn read_stdin() -> Result<Option<String>> {
         Ok(None)
     }
 }
-

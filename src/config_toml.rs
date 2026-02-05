@@ -61,12 +61,16 @@ pub struct Options {
 impl Config {
     pub fn parse(config: PathBuf) -> Result<Config> {
         let context = std::fs::read_to_string(config)?;
-        let cfg = toml::from_str(&context)?;
-        Ok(cfg)
+        match toml::from_str(&context) {
+            Ok(res) => Ok(res),
+            Err(e) => Err(color_eyre::Report::new(e)),
+        }
     }
 
     pub fn parse_from_txt(context: &str) -> Result<Config> {
-        let cfg = toml::from_str(context)?;
-        Ok(cfg)
+        match toml::from_str(&context) {
+            Ok(res) => Ok(res),
+            Err(e) => Err(color_eyre::Report::new(e)),
+        }
     }
 }
