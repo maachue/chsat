@@ -1,9 +1,11 @@
 use std::path::Path;
 
+#[cfg(windows)]
+use crate::data::windows_util;
 use crate::data::{KernelInfo, OSReleaseInfo, PackageManagerInfo, WindowsInfo};
 
 use super::ExposeData;
-use color_eyre::Result;
+use color_eyre::{Result, eyre::eyre};
 
 impl KernelInfo {
     pub fn get() -> Result<Self> {
@@ -47,36 +49,9 @@ impl OSReleaseInfo {
     }
 }
 
-impl WindowsInfo {
-    pub fn get() -> Self {
-        #[cfg(target_family = "windows")]
-        unsafe {
-            use windows::{
-                Wdk::System::SystemServices::RtlGetVersion,
-                Win32::System::SystemInformation::OSVERSIONINFOW,
-            };
-
-            let mut win32_info = OSVERSIONINFOW {
-                dwOSVersionInfoSize: std::mem::size_of::<OSVERSIONINFOW>() as u32,
-                ..Default::default()
-            };
-
-            let _ = RtlGetVersion(&mut win32_info);
-            Self {
-                current_build: win32_info.dwBuildNumber.to_string(),
-                current_major_version_number: win32_info.dwMajorVersion,
-                current_minor_version_number: win32_info.dwMinorVersion,
-            }
-        }
-
-        #[cfg(not(target_family = "windows"))]
-        Self::default()
-    }
-}
-
 impl PackageManagerInfo {
-    pub fn get(distro_id: &str) -> Self {
-        match distro_id {
+    pub fn get(os_id: &str) -> Self {
+        match os_id {
             "cachyos" | "archlinux" | "endeavouros" => Self {
                 binary_name: "pacman".to_string(),
                 binary_path: which::which("pacman").unwrap_or_default(),
@@ -90,6 +65,16 @@ impl PackageManagerInfo {
                 required_sudo: true,
             },
             _ => Self::default(),
+        }
+    }
+}
+
+impl WindowsInfo {
+    pub fn get() -> Result<Self> {
+        if cfg!(windows) {
+            windows_util::get_windowsnt_infomation().map_err(|e| eyre!(e))
+        } else {
+            Ok(Self::default())
         }
     }
 }
@@ -129,7 +114,7 @@ impl ExposeData {
             //     .unwrap_or_default()
             //     .to_string_lossy()
             //     .into_owned(),
-            windows_version: WindowsInfo::get(),
+            windows_version: WindowsInfo::get()?,
         })
     }
 }

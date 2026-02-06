@@ -63,10 +63,10 @@ pub struct WindowsInfo {
     pub current_build: String,
     pub current_major_version_number: u32,
     pub current_minor_version_number: u32,
-    // pub current_version: String,
-    // pub display_version: String,
-    // pub edition_id: String,
-    // pub product_name: String,
+    pub current_version: String,
+    pub display_version: String,
+    pub edition_id: String,
+    pub product_name: String,
 }
 
 #[derive(Serialize, Default)]
