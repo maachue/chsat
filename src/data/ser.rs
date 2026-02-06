@@ -19,10 +19,10 @@ pub struct ExposeData {
     pub kernel: KernelInfo,
     pub os: &'static str,
     pub os_release: OSReleaseInfo,
-    pub uid: String,
-    pub username: String,
-    pub gid: String,
-    pub group: String,
+    // pub uid: String,
+    // pub username: String,
+    // pub gid: String,
+    // pub group: String,
     pub windows_version: WindowsInfo,
     pub package_manager: PackageManagerInfo,
 }
@@ -59,7 +59,15 @@ pub struct OSReleaseInfo {
 
 #[derive(Serialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct WindowsInfo {}
+pub struct WindowsInfo {
+    pub current_build: String,
+    pub current_major_version_number: u32,
+    pub current_minor_version_number: u32,
+    // pub current_version: String,
+    // pub display_version: String,
+    // pub edition_id: String,
+    // pub product_name: String,
+}
 
 #[derive(Serialize, Default)]
 #[serde(rename_all = "camelCase")]

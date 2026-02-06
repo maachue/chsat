@@ -1,4 +1,4 @@
-use std::{path::Path, process::Command};
+use std::path::Path;
 
 use crate::data::{KernelInfo, OSReleaseInfo, PackageManagerInfo, WindowsInfo};
 
@@ -49,10 +49,22 @@ impl OSReleaseInfo {
 
 impl WindowsInfo {
     pub fn get() -> Self {
-        /// TODO: add windows specific infomation
         #[cfg(target_family = "windows")]
-        {
-            Ok(Self {})
+        unsafe {
+            use windows::{
+                Wdk::System::SystemServices::RtlGetVersion,
+                Win32::System::SystemInformation::OSVERSIONINFOW,
+            };
+
+            let mut win32_info =
+                windows::Win32::System::SystemInformation::OSVERSIONINFOW::default();
+            win32_info.dwOSVersionInfoSize = std::mem::size_of::<OSVERSIONINFOW>() as u32;
+            let _ = RtlGetVersion(&mut win32_info);
+            Self {
+                current_build: win32_info.dwBuildNumber.to_string(),
+                current_major_version_number: win32_info.dwMajorVersion,
+                current_minor_version_number: win32_info.dwMinorVersion,
+            }
         }
 
         #[cfg(not(target_family = "windows"))]
@@ -104,16 +116,17 @@ impl ExposeData {
             os: std::env::consts::OS,
             package_manager: PackageManagerInfo::get(os_id),
             os_release,
-            uid: users::get_current_uid().to_string(),
-            username: users::get_current_username()
-                .unwrap_or_default()
-                .to_string_lossy()
-                .into_owned(),
-            gid: users::get_current_gid().to_string(),
-            group: users::get_current_groupname()
-                .unwrap_or_default()
-                .to_string_lossy()
-                .into_owned(),
+            // WARN: `users` crate support only unix
+            // uid: users::get_current_uid().to_string(),
+            // username: users::get_current_username()
+            //     .unwrap_or_default()
+            //     .to_string_lossy()
+            //     .into_owned(),
+            // gid: users::get_current_gid().to_string(),
+            // group: users::get_current_groupname()
+            //     .unwrap_or_default()
+            //     .to_string_lossy()
+            //     .into_owned(),
             windows_version: WindowsInfo::get(),
         })
     }
