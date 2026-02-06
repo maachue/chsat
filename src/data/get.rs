@@ -56,9 +56,11 @@ impl WindowsInfo {
                 Win32::System::SystemInformation::OSVERSIONINFOW,
             };
 
-            let mut win32_info =
-                windows::Win32::System::SystemInformation::OSVERSIONINFOW::default();
-            win32_info.dwOSVersionInfoSize = std::mem::size_of::<OSVERSIONINFOW>() as u32;
+            let mut win32_info = OSVERSIONINFOW {
+                dwOSVersionInfoSize: std::mem::size_of::<OSVERSIONINFOW>() as u32,
+                ..Default::default()
+            };
+
             let _ = RtlGetVersion(&mut win32_info);
             Self {
                 current_build: win32_info.dwBuildNumber.to_string(),
