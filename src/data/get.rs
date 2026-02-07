@@ -55,6 +55,7 @@ impl OSReleaseInfo {
 impl PackageManagerInfo {
     pub fn get(os_id: &str) -> Self {
         match os_id {
+            // NOTE: not ensure these id is correct
             "cachyos" | "archlinux" | "endeavouros" => Self {
                 binary_name: "pacman".to_string(),
                 flags: super::PMFlags {
@@ -62,6 +63,17 @@ impl PackageManagerInfo {
                     remove_flags: vec!["-Rns".to_string()],
                     update_pkgs_flags: vec!["-Syu".to_string()],
                     update_metadata_flags: vec!["-Syy".to_string()],
+                },
+                usage: "{{pm}} {{flags}} {{pkgs}} {{opts}}".to_string(),
+                required_sudo: true,
+            },
+            "fedora" | "nobara" => Self {
+                binary_name: "dnf".to_string(),
+                flags: super::PMFlags {
+                    install_flags: vec!["install".to_string()],
+                    remove_flags: vec!["remove".to_string()],
+                    update_pkgs_flags: vec!["upgrade".to_string()],
+                    update_metadata_flags: vec!["makecache".to_string(), "--refresh".to_string()],
                 },
                 usage: "{{pm}} {{flags}} {{pkgs}} {{opts}}".to_string(),
                 required_sudo: true,

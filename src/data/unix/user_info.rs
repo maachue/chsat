@@ -1,15 +1,4 @@
-// uid: users::get_current_uid().to_string(),
-// username: users::get_current_username()
-//     .unwrap_or_default()
-//     .to_string_lossy()
-//     .into_owned(),
-// gid: users::get_current_gid().to_string(),
-// group: users::get_current_groupname()
-//     .unwrap_or_default()
-//     .to_string_lossy()
-//     .into_owned(),
-
-use uzers::{get_current_uid, get_user_by_uid, get_user_groups};
+use uzers::{get_current_uid, get_current_username, get_user_by_uid, get_user_groups};
 
 use crate::data::ser::UserInfo;
 
@@ -24,6 +13,7 @@ pub fn get_unix_user_infomation() -> Result<UserInfo, UserInfoFailed> {
 
     let mut gids = Vec::new();
     let mut groups_name = Vec::new();
+    let username = get_current_username().ok_or(UserInfoFailed::GetFailed)?;
     if let Some(user) = get_user_by_uid(uid)
         && let Some(groups) = get_user_groups(user.name(), user.primary_group_id())
     {
@@ -34,7 +24,7 @@ pub fn get_unix_user_infomation() -> Result<UserInfo, UserInfoFailed> {
 
         Ok(UserInfo {
             uid: uid.to_string(),
-            username: whoami::username(),
+            username: username.to_string_lossy().into_owned(),
             gids,
             groups: groups_name,
         })
