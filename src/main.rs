@@ -11,6 +11,7 @@ mod rhai_impl;
 // mod utils;
 
 fn main() -> Result<()> {
+    color_eyre::install()?;
     let cmd = cli::Cli::parse();
 
     // let stdin = utils::read_stdin()?;

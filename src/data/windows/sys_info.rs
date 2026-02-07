@@ -10,6 +10,11 @@ use windows::{
 use crate::data::WindowsInfo;
 
 struct RegKey(HKEY);
+impl Default for RegKey {
+    fn default() -> Self {
+        Self(HKEY::default())
+    }
+}
 impl Drop for RegKey {
     fn drop(&mut self) {
         unsafe {
@@ -88,7 +93,7 @@ fn read_dword(hkey: HKEY, name: PCWSTR, name_debug: &'static str) -> Result<u32,
 }
 
 pub fn get_windowsnt_infomation() -> Result<WindowsInfo, ReqKeyErr> {
-    let mut hkey_raw = HKEY::default();
+    let mut hkey = RegKey::default();
 
     unsafe {
         RegOpenKeyExW(
@@ -96,13 +101,12 @@ pub fn get_windowsnt_infomation() -> Result<WindowsInfo, ReqKeyErr> {
             w!("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"),
             Some(0),
             KEY_READ,
-            &mut hkey_raw,
+            &mut hkey.0,
         )
         .ok()
         .map_err(|_| ReqKeyErr::FailedToOpenKey("Windows NT CurrentVersion"))?;
     }
 
-    let hkey = RegKey(hkey_raw);
     Ok(WindowsInfo {
         current_build: read_string(hkey.0, w!("CurrentBuild"), "CurrentBuild")?,
         current_major_version_number: read_dword(

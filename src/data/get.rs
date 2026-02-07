@@ -1,11 +1,9 @@
 use std::path::Path;
 
-#[cfg(windows)]
-use crate::data::windows_util;
-use crate::data::{KernelInfo, OSReleaseInfo, PackageManagerInfo, WindowsInfo};
+use crate::data::{KernelInfo, OSReleaseInfo, PackageManagerInfo, WindowsInfo, ser::UserInfo};
 
 use super::ExposeData;
-use color_eyre::{Result, eyre::eyre};
+use color_eyre::Result;
 
 impl KernelInfo {
     pub fn get() -> Result<Self> {
@@ -54,7 +52,6 @@ impl PackageManagerInfo {
         match os_id {
             "cachyos" | "archlinux" | "endeavouros" => Self {
                 binary_name: "pacman".to_string(),
-                binary_path: which::which("pacman").unwrap_or_default(),
                 flags: super::PMFlags {
                     install_flags: vec!["-S".to_string()],
                     remove_flags: vec!["-Rns".to_string()],
@@ -71,11 +68,21 @@ impl PackageManagerInfo {
 
 impl WindowsInfo {
     pub fn get() -> Result<Self> {
-        if cfg!(windows) {
-            windows_util::get_windowsnt_infomation().map_err(|e| eyre!(e))
-        } else {
+        #[cfg(windows)]
+        {
+            Ok(crate::data::windows::sys_info::get_windowsnt_infomation()?)
+        }
+        #[cfg(not(windows))]
+        {
             Ok(Self::default())
         }
+    }
+}
+
+impl UserInfo {
+    pub fn get() -> Result<Self> {
+        #[cfg(windows)]
+        Ok(super::windows::user_info::windowsnt_get_user_info()?)
     }
 }
 
@@ -103,6 +110,7 @@ impl ExposeData {
             os: std::env::consts::OS,
             package_manager: PackageManagerInfo::get(os_id),
             os_release,
+            user_info: UserInfo::get()?,
             // WARN: `users` crate support only unix
             // uid: users::get_current_uid().to_string(),
             // username: users::get_current_username()
