@@ -69,7 +69,7 @@ impl Drop for OwnedPWSTR {
     }
 }
 
-fn get_user_sid(token: &TokenHandle) -> Result<String, SecurityErr> {
+fn get_user_sid(token: &TokenHandle) -> Result<(String, String), SecurityErr> {
     unsafe {
         let mut dw_size = 0;
         let _result = GetTokenInformation(token.0, TokenUser, None, 0, &mut dw_size);
@@ -86,10 +86,12 @@ fn get_user_sid(token: &TokenHandle) -> Result<String, SecurityErr> {
         let token_user = &*(buffer.as_ptr().cast::<TOKEN_USER>());
         let sid = token_user.User.Sid;
 
+        let (_, name) = lookup_account_sid(sid)?;
+
         let string_sid = OwnedPWSTR::try_from(sid)?;
         let output = string_sid.0.to_string()?; // copy data
 
-        Ok(output)
+        Ok((output, name))
     }
 }
 
@@ -178,12 +180,12 @@ pub fn windowsnt_get_user_info() -> Result<UserInfo, SecurityErr> {
         OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token.0)
             .map_err(|e| SecurityErr::WIn32Error("get Current Process token", e))?;
 
-        let uid = get_user_sid(&mut token)?;
+        let (uid, username) = get_user_sid(&mut token)?;
         let (gids, groups) = get_group_sid(&mut token)?;
 
         Ok(UserInfo {
             uid,
-            username: whoami::username(),
+            username,
             gids,
             groups,
         })
