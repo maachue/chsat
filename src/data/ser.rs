@@ -25,7 +25,7 @@ pub struct ExposeData {
     pub package_manager: PackageManagerInfo,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct UserInfo {
     pub uid: String,

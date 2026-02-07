@@ -12,10 +12,15 @@ impl KernelInfo {
             Ok(Self {
                 osrelease: sys_info::os_release().unwrap_or("".to_string()),
                 ostype: sys_info::os_type().unwrap_or("".to_string()),
-                version: String::from_utf8(Command::new("uname").arg("-v").output()?.stdout)
-                    .unwrap_or_default()
-                    .trim() // Remove `\n`
-                    .to_string(),
+                version: String::from_utf8(
+                    std::process::Command::new("uname")
+                        .arg("-v")
+                        .output()?
+                        .stdout,
+                )
+                .unwrap_or_default()
+                .trim() // Remove `\n`
+                .to_string(),
             })
         }
 
@@ -82,7 +87,13 @@ impl WindowsInfo {
 impl UserInfo {
     pub fn get() -> Result<Self> {
         #[cfg(windows)]
-        Ok(super::windows::user_info::windowsnt_get_user_info()?)
+        {
+            Ok(super::windows::user_info::windowsnt_get_user_info()?)
+        }
+        #[cfg(not(windows))]
+        {
+            Ok(super::unix::user_info::get_unix_user_infomation()?)
+        }
     }
 }
 
@@ -111,17 +122,6 @@ impl ExposeData {
             package_manager: PackageManagerInfo::get(os_id),
             os_release,
             user_info: UserInfo::get()?,
-            // WARN: `users` crate support only unix
-            // uid: users::get_current_uid().to_string(),
-            // username: users::get_current_username()
-            //     .unwrap_or_default()
-            //     .to_string_lossy()
-            //     .into_owned(),
-            // gid: users::get_current_gid().to_string(),
-            // group: users::get_current_groupname()
-            //     .unwrap_or_default()
-            //     .to_string_lossy()
-            //     .into_owned(),
             windows_version: WindowsInfo::get()?,
         })
     }
